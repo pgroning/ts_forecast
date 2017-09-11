@@ -14,9 +14,21 @@ class ts_plot(object):
     def read_csv(self, csvfile):
         # Read data from csv file
         self.df = pd.read_csv(csvfile, nrows=None)
+        self.df['delivery_date'] = pd.to_datetime(self.df.delivery_date.values)
+
+    def resample(self):
+        print("resample data")
+        self.df = self.df.set_index(['delivery_date'])
+
+        self.df_w = pd.DataFrame()
+        self.df_w['num_of_orders'] = self.df.num_of_orders.resample('W').sum()
+        self.df_w['num_of_orderlines'] = self.df.num_of_orderlines.resample('W').sum()
+        self.df_w['prodid_quantity'] = self.df.prodid_quantity.resample('W').sum()
+        self.df_w['prodid_orderlines'] = self.df.prodid_orderlines.resample('W').sum()
+        # set_trace()
 
     def plot_quantity(self):
-        x = pd.to_datetime(self.df.delivery_date.values)
+        x = self.df.delivery_date.values
         y = self.df.prodid_quantity.values
         #set_trace()
         fig = plt.figure()
@@ -32,7 +44,7 @@ class ts_plot(object):
         y2 = y / self.df.num_of_orders.values
         plt.plot(x, y2)
         ax2.set_xlabel('Date')
-        ax2.set_ylabel('quantity / num of orders')
+        ax2.set_ylabel('quantity / num-of-orders')
         plt.grid()
         plt.show()
 
@@ -54,16 +66,16 @@ def plot_y1y2(df):
 def main():
     # csvfile = "/media/pergro/DATA/Data/Myfiles/pocal/new_files/prodid-55482.csv"  # Entrecote i Bit ca 800g Scan
     # csvfile = "/media/pergro/DATA/Data/Myfiles/pocal/new_files/prodid-8200.csv"  # Fullkornsris 1kg Uncle Bens
-    csvfile = "/media/pergro/DATA/Data/Myfiles/pocal/new_files/prodid-2602.csv"   # Banan EKO Klass 1
+    #csvfile = "/media/pergro/DATA/Data/Myfiles/pocal/new_files/prodid-2602.csv"   # Banan EKO Klass 1
     # csvfile = "/media/pergro/DATA/Data/Myfiles/pocal/new_files/prodid-78452.csv"  # Mellanmjölk 1.5% 1L Arla
     # csvfile = "/media/pergro/DATA/Data/Myfiles/pocal/new_files/prodid-15664.csv"  # Mellanmjölk 1.5% 1.5L Arla
-    # csvfile = "/media/pergro/DATA/Data/Myfiles/pocal/new_files/prodid-16833.csv"  # inlagd sill
+    csvfile = "/media/pergro/DATA/Data/Myfiles/pocal/new_files/prodid-16833.csv"  # inlagd sill
     # csvfile = "/media/pergro/DATA/Data/Myfiles/pocal/new_files/prodid-121612.csv"  # Signalkräftor Färska Svenska 500g Smålandskräftan
-    prodid = 2602
+    prodid = None
 
     ts = ts_plot(csvfile, prodid)
-    ts.plot_quantity()
-
+    #ts.plot_quantity()
+    ts.resample()
 
 
 if __name__ == "__main__":
