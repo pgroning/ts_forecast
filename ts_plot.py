@@ -15,8 +15,7 @@ class ts_plot(object):
         # Read data from csv file
         self.df = pd.read_csv(csvfile, nrows=None)
         self.df['delivery_date'] = pd.to_datetime(self.df.delivery_date.values)
-        self.df = self.df.set_index(['delivery_date'])
-        #set_trace()
+        self.df.set_index(['delivery_date'], inplace=True)
 
     def resample(self, freq='W-MON'):
         print("resample data")
